@@ -3,7 +3,6 @@ class MatrixBlock extends HTMLElement {
     super();
 
     this.cellSize = config.cellSize;
-    this.isActive = false;
   }
 
   connectedCallback() {
@@ -16,12 +15,10 @@ class MatrixBlock extends HTMLElement {
   }
 
   enable() {
-    this.isActive = true;
     this.classList.add("active");
   }
 
   disable() {
-    this.isActive = false;
     this.classList.remove("active");
   }
 }

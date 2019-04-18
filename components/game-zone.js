@@ -5,6 +5,11 @@ const keyCodes = {
   "arrowUp": 38,
 }
 
+moveIntervalTime = 500;
+bonusIntervalTime = 2000;
+const simpleBlockId = 1;
+const bonusBlockId = 2;
+
 class GameZone extends HTMLElement {
   constructor() {
     super();
@@ -79,6 +84,36 @@ class GameZone extends HTMLElement {
     }
   }
 
+  addBonusBlock() {
+    if (this.bonusBlockCoords) {
+      return;
+    }
+
+    let bonusCoords = {
+      x: Math.floor(Math.random() * this.columns - 1) + 1,
+      y: Math.floor(Math.random() * this.rows - 1) + 1
+    }
+
+    if (this.mazeMatrix[bonusCoords.y][bonusCoords.x]) {
+      this.addBonusBlock();
+      return;
+    }
+    // let bonusBlockClass = customElements.get("bonus-block");
+
+    this.bonusBlockCoords = bonusCoords;
+    this.mazeMatrix[bonusCoords.y][bonusCoords.x] = 2;
+
+    let oldBlock = this.blocksMatrix[bonusCoords.y][bonusCoords.x];
+    oldBlock.enable();
+    // let newBlock = new bonusBlockClass({
+    //   cellSize: this.cellSize
+    // });
+    // newBlock.enable();
+
+    // this.blocksMatrix[bonusCoords.y][bonusCoords.x] = newBlock;
+    // this.replaceChild(newBlock, oldBlock);
+  }
+
   addSnake() {
     for (let i = 0; i < this.snakeSize; i++) {
       let blockX = Math.floor(this.columns / 2) - i;
@@ -91,6 +126,32 @@ class GameZone extends HTMLElement {
         y: blockY
       });
     }
+  }
+
+  getBonus(bonusCoords) {
+    let matrixBlockClass = customElements.get("matrix-block");
+    let lastBlockCoords = this.venomSnake[this.snakeSize];
+
+    this.mazeMatrix[bonusCoords.y][bonusCoords.x] = 0;
+    let oldBlock = this.blocksMatrix[bonusCoords.y][bonusCoords.x];
+    oldBlock.enable();
+    // let newBlock = new matrixBlockClass({
+    //   cellSize: this.cellSize
+    // });
+
+    // newBlock.enable();
+
+    // this.replaceChild(newBlock, oldBlock);
+    // this.blocksMatrix[bonusCoords.y][bonusCoords.x] = newBlock;
+
+    this.snakeSize++;
+
+    this.venomSnake.unshift({
+      x: bonusCoords.x,
+      y: bonusCoords.y
+    });
+
+    this.bonusBlockCoords = null;
   }
 
   moveSnake() {
@@ -110,14 +171,19 @@ class GameZone extends HTMLElement {
       y: snakeHead.y + verticalStep
     }
 
+    if (!this.mazeMatrix[newHeadCoords.y] || this.mazeMatrix[newHeadCoords.y][newHeadCoords.x] === simpleBlockId) {
+      this.gameOver();
+      return;
+    }
+
+    if (this.mazeMatrix[newHeadCoords.y][newHeadCoords.x] === bonusBlockId) {
+      this.getBonus(newHeadCoords)
+      return;
+    }
+
     this.venomSnake[0] = {
       x: newHeadCoords.x,
       y: newHeadCoords.y
-    }
-
-    if (!this.mazeMatrix[newHeadCoords.y] || this.mazeMatrix[newHeadCoords.y][newHeadCoords.x] === 1) {
-      this.gameOver();
-      return;
     }
 
     this.mazeMatrix[snakeHead.y][snakeHead.x] = 0;
@@ -156,9 +222,14 @@ class GameZone extends HTMLElement {
   startGame() {
     this.gameStarted = true;
 
+    // TODO: interval refs and gameOver handle
     setInterval(() => {
       this.moveSnake();
-    }, 300);
+    }, moveIntervalTime);
+
+    setInterval(() => {
+      this.addBonusBlock();
+    }, bonusIntervalTime);
 
     this.animationFrameRef = requestAnimationFrame(this.gameFrame.bind(this));
   }

@@ -16,9 +16,15 @@ body * {
   flex-wrap: wrap;
 }
 
-matrix-block {
+matrix-block,
+bonus-block {
   border: 1px solid black;
   box-sizing: border-box;
+}
+
+bonus-block.active {
+  border-color: red;
+  animation: glow .5s infinite alternate;
 }
 
 .head {
@@ -27,4 +33,14 @@ matrix-block {
 
 .active {
   background-color: white;
+}
+
+@keyframes glow {
+  0% {
+    opacity: .3;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }

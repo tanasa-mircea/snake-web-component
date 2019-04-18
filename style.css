@@ -12,16 +12,19 @@ body * {
   position: relative;
   border: 1px solid black;
   overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.building-block {
-  position: absolute;
-  top: 0;
-  left: 0;
+matrix-block {
   border: 1px solid black;
   box-sizing: border-box;
 }
 
 .head {
   background-color: red !important;
+}
+
+.active {
+  background-color: white;
 }

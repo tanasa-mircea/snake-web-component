@@ -1,0 +1,27 @@
+body {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+body * {
+  display: block;
+}
+
+.game-zone {
+  position: relative;
+  border: 1px solid black;
+  overflow: hidden;
+}
+
+.building-block {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+
+.head {
+  background-color: red !important;
+}

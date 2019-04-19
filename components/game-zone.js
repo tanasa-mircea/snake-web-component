@@ -5,7 +5,7 @@ const keyCodes = {
   "arrowUp": 38,
 }
 
-moveIntervalTime = 500;
+moveIntervalTime = 200;
 bonusIntervalTime = 2000;
 const simpleBlockId = 1;
 const bonusBlockId = 2;
@@ -98,20 +98,18 @@ class GameZone extends HTMLElement {
       this.addBonusBlock();
       return;
     }
-    // let bonusBlockClass = customElements.get("bonus-block");
+    let bonusBlockClass = customElements.get("bonus-block");
 
     this.bonusBlockCoords = bonusCoords;
     this.mazeMatrix[bonusCoords.y][bonusCoords.x] = 2;
 
     let oldBlock = this.blocksMatrix[bonusCoords.y][bonusCoords.x];
-    oldBlock.enable();
-    // let newBlock = new bonusBlockClass({
-    //   cellSize: this.cellSize
-    // });
-    // newBlock.enable();
+    let newBlock = new bonusBlockClass({
+      cellSize: this.cellSize
+    });
 
-    // this.blocksMatrix[bonusCoords.y][bonusCoords.x] = newBlock;
-    // this.replaceChild(newBlock, oldBlock);
+    this.blocksMatrix[bonusCoords.y][bonusCoords.x] = newBlock;
+    this.replaceChild(newBlock, oldBlock);
   }
 
   addSnake() {
@@ -130,25 +128,23 @@ class GameZone extends HTMLElement {
 
   getBonus(bonusCoords) {
     let matrixBlockClass = customElements.get("matrix-block");
-    let lastBlockCoords = this.venomSnake[this.snakeSize];
+    let lastSnakeBlockCoords = this.venomSnake[this.snakeSize - 1];
 
     this.mazeMatrix[bonusCoords.y][bonusCoords.x] = 0;
     let oldBlock = this.blocksMatrix[bonusCoords.y][bonusCoords.x];
-    oldBlock.enable();
-    // let newBlock = new matrixBlockClass({
-    //   cellSize: this.cellSize
-    // });
+    let newBlock = new matrixBlockClass({
+      cellSize: this.cellSize
+    });
 
-    // newBlock.enable();
 
-    // this.replaceChild(newBlock, oldBlock);
-    // this.blocksMatrix[bonusCoords.y][bonusCoords.x] = newBlock;
+    this.replaceChild(newBlock, oldBlock);
+    this.blocksMatrix[bonusCoords.y][bonusCoords.x] = newBlock;
 
     this.snakeSize++;
 
-    this.venomSnake.unshift({
-      x: bonusCoords.x,
-      y: bonusCoords.y
+    this.venomSnake.push({
+      x: lastSnakeBlockCoords.x,
+      y: lastSnakeBlockCoords.y
     });
 
     this.bonusBlockCoords = null;
@@ -178,8 +174,8 @@ class GameZone extends HTMLElement {
 
     if (this.mazeMatrix[newHeadCoords.y][newHeadCoords.x] === bonusBlockId) {
       this.getBonus(newHeadCoords)
-      return;
-    }
+      // return;
+    }    
 
     this.venomSnake[0] = {
       x: newHeadCoords.x,
